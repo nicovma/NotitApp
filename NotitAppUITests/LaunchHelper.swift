@@ -7,10 +7,13 @@ import XCTest
 extension XCTestCase {
     /// Launches the app with an in-memory, empty SwiftData store so every
     /// test starts from the same clean state regardless of what previous
-    /// runs (or the on-disk dev store) left behind.
+    /// runs (or the on-disk dev store) left behind. Also pins the app's
+    /// locale to Spanish — without this, assertions on localized text (e.g.
+    /// "1 nota") pass or fail depending on the runner's system locale
+    /// instead of the app's actual behavior (CI runners default to English).
     func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing"]
+        app.launchArguments = ["--ui-testing", "-AppleLanguages", "(es)", "-AppleLocale", "es_AR"]
         app.launch()
         return app
     }

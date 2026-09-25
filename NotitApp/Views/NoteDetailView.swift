@@ -81,6 +81,7 @@ struct NoteDetailView: View {
             .padding(.bottom, 40)
         }
         .navigationBarHidden(true)
+        .enablesInteractivePopGesture()
         .hidesTabBarWhilePresented()
         .sheet(isPresented: $isEditing) {
             NavigationStack {

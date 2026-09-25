@@ -67,6 +67,7 @@ struct CategoryNotesListView: View {
             .padding(.bottom, 40)
         }
         .navigationBarHidden(true)
+        .enablesInteractivePopGesture()
         .hidesTabBarWhilePresented()
         .navigationDestination(for: Note.self) { note in
             NoteDetailView(note: note, root: root) {

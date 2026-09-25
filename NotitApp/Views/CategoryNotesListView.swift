@@ -46,6 +46,7 @@ struct CategoryNotesListView: View {
                                 NoteCard(note: note)
                                     .contentShape(Rectangle())
                                     .onTapGesture { path.append(note) }
+                                    .accessibilityIdentifier("categoryNotes.row.\(note.id)")
                                     .listRowBackground(Color.clear)
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets(top: 7, leading: 0, bottom: 7, trailing: 0))
@@ -67,6 +68,7 @@ struct CategoryNotesListView: View {
             .padding(.bottom, 40)
         }
         .navigationBarHidden(true)
+        .enablesInteractivePopGesture()
         .hidesTabBarWhilePresented()
         .navigationDestination(for: Note.self) { note in
             NoteDetailView(note: note, root: root) {

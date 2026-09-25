@@ -32,6 +32,7 @@ struct NoCategoriesPrompt: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("addNote.noCategoriesPrompt")
     }
 }
 
@@ -68,6 +69,7 @@ struct CategoryChip: View {
         // single VoiceOver stop instead of announcing an unlabeled shape.
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+        .accessibilityIdentifier("addNote.categoryChip.\(category.id)")
     }
 }
 
@@ -86,5 +88,6 @@ struct AddCategoryChip: View {
                 .background(LiquidGlass.inkSecondary.opacity(0.12), in: Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("addNote.addCategoryChip")
     }
 }

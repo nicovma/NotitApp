@@ -56,5 +56,6 @@ struct LiquidGlassTabBar: View {
         // would give for free.
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+        .accessibilityIdentifier(tab == .notes ? "tabBar.notes" : "tabBar.categories")
     }
 }

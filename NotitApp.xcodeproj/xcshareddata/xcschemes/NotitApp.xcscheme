@@ -34,6 +34,20 @@
                ReferencedContainer = "container:NotitApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F901F450487CD89A00EFE8D7"
+               BuildableName = "NotitAppUITests.xctest"
+               BlueprintName = "NotitAppUITests"
+               ReferencedContainer = "container:NotitApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -59,6 +73,17 @@
                BlueprintIdentifier = "E990FD43C8BF5F58325B6507"
                BuildableName = "NotitAppTests.xctest"
                BlueprintName = "NotitAppTests"
+               ReferencedContainer = "container:NotitApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F901F450487CD89A00EFE8D7"
+               BuildableName = "NotitAppUITests.xctest"
+               BlueprintName = "NotitAppUITests"
                ReferencedContainer = "container:NotitApp.xcodeproj">
             </BuildableReference>
          </TestableReference>

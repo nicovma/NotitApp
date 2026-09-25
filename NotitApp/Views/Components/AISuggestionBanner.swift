@@ -68,6 +68,7 @@ struct SuggestionBanner: View {
                                 .font(.system(size: 13, weight: .semibold))
                         }
                         .buttonStyle(SuggestionChipStyle())
+                        .accessibilityIdentifier("addNote.suggestion.titleChip")
                     }
 
                     SuggestionRow(label: "Categoría") {
@@ -79,6 +80,7 @@ struct SuggestionBanner: View {
                             .font(.system(size: 13, weight: .semibold))
                         }
                         .buttonStyle(SuggestionChipStyle())
+                        .accessibilityIdentifier("addNote.suggestion.categoryChip")
                     }
                 }
             }

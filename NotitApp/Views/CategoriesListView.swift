@@ -46,6 +46,7 @@ struct CategoriesListView: View {
                                 CategoryRow(category: category)
                                     .contentShape(Rectangle())
                                     .onTapGesture { path.append(category) }
+                                    .accessibilityIdentifier("categories.row.\(category.id)")
                                     .listRowBackground(Color.clear)
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0))
@@ -67,6 +68,13 @@ struct CategoriesListView: View {
                                         .tint(LiquidGlass.systemBlue)
                                     }
                             }
+                            Link("Política de privacidad", destination: URL(string: "https://nicovma.github.io/NotitApp/privacy-policy.html")!)
+                                .font(.system(size: 12))
+                                .foregroundStyle(LiquidGlass.inkTertiary)
+                                .frame(maxWidth: .infinity)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+
                             Color.clear.frame(height: 90)
                                 .listRowBackground(Color.clear)
                                 .listRowSeparator(.hidden)
@@ -182,6 +190,7 @@ struct CategoryRow: View {
                 Text("\(category.notes.count) notas")
                     .font(.system(size: 13))
                     .foregroundStyle(LiquidGlass.inkSecondary)
+                    .accessibilityIdentifier("categories.row.\(category.id).noteCount")
             }
 
             Spacer()

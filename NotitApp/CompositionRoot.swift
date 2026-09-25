@@ -11,6 +11,13 @@ import SwiftData
 final class CompositionRoot {
 
     private let modelContext: ModelContext
+    // XCTestConfigurationFilePath is set by Xcode for every process running
+    // under the test bundle (unit or UI tests) — routing those to the no-op
+    // logger keeps test runs out of the real Firebase project without a
+    // separate test-only composition path.
+    private let analytics: AnalyticsLogging = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        ? NoOpAnalyticsLogger()
+        : FirebaseAnalyticsLogger()
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -21,7 +28,7 @@ final class CompositionRoot {
     }
 
     func makeAddNoteViewModel() -> AddNoteViewModel {
-        AddNoteViewModel(noteUseCase: makeNoteUseCase(), categoryUseCase: makeCategoryUseCase(), noteSuggestionUseCase: makeNoteSuggestionUseCase())
+        AddNoteViewModel(noteUseCase: makeNoteUseCase(), categoryUseCase: makeCategoryUseCase(), noteSuggestionUseCase: makeNoteSuggestionUseCase(), analytics: analytics)
     }
 
     func makeEditNoteViewModel(for note: Note) -> EditNoteViewModel {
@@ -33,7 +40,7 @@ final class CompositionRoot {
     }
 
     func makeAddCategoryViewModel() -> AddCategoryViewModel {
-        AddCategoryViewModel(useCase: makeCategoryUseCase())
+        AddCategoryViewModel(useCase: makeCategoryUseCase(), analytics: analytics)
     }
 
     func makeEditCategoryViewModel(for category: Category) -> EditCategoryViewModel {

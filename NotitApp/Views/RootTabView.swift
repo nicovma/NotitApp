@@ -8,6 +8,12 @@ struct RootTabView: View {
     let root: CompositionRoot
     @State private var selection: AppTab = .notes
     @StateObject private var tabBarVisibility = TabBarVisibility()
+    @StateObject private var categoryListViewModel: CategoryListViewModel
+
+    init(root: CompositionRoot) {
+        self.root = root
+        _categoryListViewModel = StateObject(wrappedValue: root.makeCategoryListViewModel())
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -16,7 +22,7 @@ struct RootTabView: View {
                     .tag(AppTab.notes)
                     .toolbar(.hidden, for: .tabBar)
 
-                CategoriesListView(root.makeCategoryListViewModel(), root: root)
+                CategoriesListView(categoryListViewModel, root: root)
                     .tag(AppTab.categories)
                     .toolbar(.hidden, for: .tabBar)
             }
@@ -30,5 +36,14 @@ struct RootTabView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: tabBarVisibility.isHidden)
+        .onChange(of: selection) {
+            // CategoriesListView's own .task only runs once per app
+            // lifetime (RootTabView keeps both tabs alive inside the same
+            // TabView) — without this, a note created from the Notes tab
+            // never refreshes the note count shown per category here.
+            if selection == .categories {
+                Task { await categoryListViewModel.fetchCategories() }
+            }
+        }
     }
 }

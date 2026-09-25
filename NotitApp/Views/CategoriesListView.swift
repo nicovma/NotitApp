@@ -67,6 +67,13 @@ struct CategoriesListView: View {
                                         .tint(LiquidGlass.systemBlue)
                                     }
                             }
+                            Link("Política de privacidad", destination: URL(string: "https://nicovma.github.io/NotitApp/privacy-policy.html")!)
+                                .font(.system(size: 12))
+                                .foregroundStyle(LiquidGlass.inkTertiary)
+                                .frame(maxWidth: .infinity)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+
                             Color.clear.frame(height: 90)
                                 .listRowBackground(Color.clear)
                                 .listRowSeparator(.hidden)

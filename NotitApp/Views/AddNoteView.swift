@@ -45,85 +45,100 @@ struct AddNoteView: View {
                 topBar
                     .padding(.bottom, 22)
 
-                TextField("Título", text: $viewModel.title)
-                    .font(.system(size: 19, weight: .bold))
-                    .accessibilityLabel(Text("Título"))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
-                    .glassSurface(cornerRadius: 18)
-                    .padding(.bottom, 16)
-                    .focused($focusedField, equals: .title)
+                // ScrollView, not a fixed VStack: the AI suggestion banner
+                // below can appear *after* the keyboard is dismissed (it's
+                // debounced), shrinking whatever's below it while unfocused.
+                // A TextEditor's internal scroll doesn't reposition on a
+                // frame-only change, so reopening the keyboard used to leave
+                // the caret hidden behind it. Scrolling the whole screen as
+                // one unit avoids that failure mode.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        TextField("Título", text: $viewModel.title)
+                            .font(.system(size: 19, weight: .bold))
+                            .accessibilityLabel(Text("Título"))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                            .glassSurface(cornerRadius: 18)
+                            .padding(.bottom, 16)
+                            .focused($focusedField, equals: .title)
 
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.system(size: 13))
-                        .foregroundStyle(LiquidGlass.systemRed)
-                        .padding(.bottom, 8)
-                }
-
-                if viewModel.isSuggesting || viewModel.suggestion != nil {
-                    SuggestionBanner(
-                        isSuggesting: viewModel.isSuggesting,
-                        suggestion: viewModel.suggestion,
-                        isNewCategory: viewModel.suggestedCategory == nil,
-                        onUseTitle: { viewModel.applySuggestedTitle() },
-                        onUseCategory: { Task { await viewModel.applySuggestedCategory() } },
-                        onRequestAnother: { viewModel.requestAnotherSuggestion() }
-                    )
-                    .padding(.bottom, 16)
-                } else if let reason = viewModel.suggestionUnavailableReason {
-                    SuggestionUnavailableHint(reason: reason)
-                        .padding(.bottom, 16)
-                }
-
-                Text("CATEGORÍA")
-                    .font(.system(size: 13, weight: .bold))
-                    .tracking(0.5)
-                    .foregroundStyle(LiquidGlass.inkSecondary)
-                    .accessibilityAddTraits(.isHeader)
-                    .padding(.bottom, 10)
-
-                if viewModel.categories.isEmpty {
-                    NoCategoriesPrompt { isAddingCategory = true }
-                        .padding(.bottom, 18)
-                } else {
-                    FlowLayout(spacing: 8) {
-                        ForEach(viewModel.categories) { category in
-                            CategoryChip(
-                                category: category,
-                                isSelected: viewModel.selectedCategory == category
-                            ) {
-                                viewModel.selectedCategory = category
-                            }
+                        if let errorMessage = viewModel.errorMessage {
+                            Text(errorMessage)
+                                .font(.system(size: 13))
+                                .foregroundStyle(LiquidGlass.systemRed)
+                                .padding(.bottom, 8)
                         }
-                        AddCategoryChip { isAddingCategory = true }
-                    }
-                    .padding(.bottom, 18)
-                }
 
-                ZStack(alignment: .topLeading) {
-                    if viewModel.value.isEmpty {
-                        Text("Escribí tu nota...")
-                            .font(.system(size: 16))
-                            .foregroundStyle(LiquidGlass.inkTertiary)
-                            .padding(.top, 8)
-                            .padding(.leading, 5)
-                            .accessibilityHidden(true)
+                        if viewModel.isSuggesting || viewModel.suggestion != nil {
+                            SuggestionBanner(
+                                isSuggesting: viewModel.isSuggesting,
+                                suggestion: viewModel.suggestion,
+                                isNewCategory: viewModel.suggestedCategory == nil,
+                                onUseTitle: { viewModel.applySuggestedTitle() },
+                                onUseCategory: { Task { await viewModel.applySuggestedCategory() } },
+                                onRequestAnother: { viewModel.requestAnotherSuggestion() }
+                            )
+                            .padding(.bottom, 16)
+                        } else if let reason = viewModel.suggestionUnavailableReason {
+                            SuggestionUnavailableHint(reason: reason)
+                                .padding(.bottom, 16)
+                        }
+
+                        Text("CATEGORÍA")
+                            .font(.system(size: 13, weight: .bold))
+                            .tracking(0.5)
+                            .foregroundStyle(LiquidGlass.inkSecondary)
+                            .accessibilityAddTraits(.isHeader)
+                            .padding(.bottom, 10)
+
+                        if viewModel.categories.isEmpty {
+                            NoCategoriesPrompt { isAddingCategory = true }
+                                .padding(.bottom, 18)
+                        } else {
+                            FlowLayout(spacing: 8) {
+                                ForEach(viewModel.categories) { category in
+                                    CategoryChip(
+                                        category: category,
+                                        isSelected: viewModel.selectedCategory == category
+                                    ) {
+                                        viewModel.selectedCategory = category
+                                    }
+                                }
+                                AddCategoryChip { isAddingCategory = true }
+                            }
+                            .padding(.bottom, 18)
+                        }
+
+                        ZStack(alignment: .topLeading) {
+                            if viewModel.value.isEmpty {
+                                Text("Escribí tu nota...")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(LiquidGlass.inkTertiary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 5)
+                                    .accessibilityHidden(true)
+                            }
+                            TextEditor(text: $viewModel.value)
+                                .font(.system(size: 16))
+                                .scrollContentBackground(.hidden)
+                                // The placeholder above is a plain overlay Text, not a
+                                // real TextEditor placeholder — VoiceOver never reads
+                                // it on its own, so an empty editor would otherwise
+                                // announce as "Text Editor, blank" with no hint.
+                                .accessibilityLabel(Text("Nota"))
+                                .accessibilityHint(viewModel.value.isEmpty ? Text("Escribí tu nota...") : Text(""))
+                                .focused($focusedField, equals: .body)
+                        }
+                        .padding(16)
+                        // minHeight, not maxHeight: inside a ScrollView,
+                        // maxHeight: .infinity collapses to zero — this just
+                        // gives the editor a sane intrinsic size instead.
+                        .frame(maxWidth: .infinity, minHeight: 220, alignment: .topLeading)
+                        .glassSurface(cornerRadius: 24)
                     }
-                    TextEditor(text: $viewModel.value)
-                        .font(.system(size: 16))
-                        .scrollContentBackground(.hidden)
-                        // The placeholder above is a plain overlay Text, not a
-                        // real TextEditor placeholder — VoiceOver never reads
-                        // it on its own, so an empty editor would otherwise
-                        // announce as "Text Editor, blank" with no hint.
-                        .accessibilityLabel(Text("Nota"))
-                        .accessibilityHint(viewModel.value.isEmpty ? Text("Escribí tu nota...") : Text(""))
-                        .focused($focusedField, equals: .body)
                 }
-                .padding(16)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .glassSurface(cornerRadius: 24)
+                .scrollDismissesKeyboard(.interactively)
             }
             .padding(.horizontal, 20)
             .padding(.top, 60)

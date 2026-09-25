@@ -25,12 +25,14 @@ final class AddNoteViewModel: ObservableObject {
     private let noteUseCase: NoteUseCase
     private let categoryUseCase: CategoryUseCase
     private let noteSuggestionUseCase: NoteSuggestionUseCase
+    private let analytics: AnalyticsLogging
     private var debounceTask: Task<Void, Never>?
 
-    init(noteUseCase: NoteUseCase, categoryUseCase: CategoryUseCase, noteSuggestionUseCase: NoteSuggestionUseCase) {
+    init(noteUseCase: NoteUseCase, categoryUseCase: CategoryUseCase, noteSuggestionUseCase: NoteSuggestionUseCase, analytics: AnalyticsLogging = NoOpAnalyticsLogger()) {
         self.noteUseCase = noteUseCase
         self.categoryUseCase = categoryUseCase
         self.noteSuggestionUseCase = noteSuggestionUseCase
+        self.analytics = analytics
     }
 
     /// Drives the "Guardar" button's enabled state so an incomplete note
@@ -42,7 +44,7 @@ final class AddNoteViewModel: ObservableObject {
     }
 
     func makeAddCategoryViewModel() -> AddCategoryViewModel {
-        AddCategoryViewModel(useCase: categoryUseCase)
+        AddCategoryViewModel(useCase: categoryUseCase, analytics: analytics)
     }
 
     var suggestionUnavailableReason: String? {
@@ -105,10 +107,12 @@ final class AddNoteViewModel: ObservableObject {
     func applySuggestedTitle() {
         guard let suggestion else { return }
         title = suggestion.title
+        analytics.logEvent("ai_suggestion_accepted", parameters: ["field": "title"])
     }
 
     func applySuggestedCategory() async {
         guard let suggestion else { return }
+        analytics.logEvent("ai_suggestion_accepted", parameters: ["field": "category"])
         if let suggestedCategory {
             selectedCategory = suggestedCategory
             return
@@ -135,8 +139,10 @@ final class AddNoteViewModel: ObservableObject {
         let note = Note(title, value: value, category: category, createdAt: .now)
         do {
             try await noteUseCase.add(note)
+            analytics.logEvent("note_created", parameters: ["category": category.name])
             didSave = true
         } catch {
+            analytics.recordError(error)
             errorMessage = error.localizedDescription
         }
     }

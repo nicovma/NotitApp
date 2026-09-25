@@ -4,5 +4,6 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 ARCH_PROPOSAL.md
+GoogleService-Info.plist
 
 .worktrees/

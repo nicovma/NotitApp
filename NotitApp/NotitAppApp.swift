@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import FirebaseCore
 
 @main
 struct NotitAppApp: App {
@@ -14,6 +15,11 @@ struct NotitAppApp: App {
     private let modelContainer: ModelContainer
 
     init() {
+        // Skip under XCTest (unit or UI) — keeps test runs out of the real
+        // Firebase project without a separate test-only entry point.
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+            FirebaseApp.configure()
+        }
         do {
             modelContainer = try ModelContainer(for: Note.self, Category.self)
         } catch {

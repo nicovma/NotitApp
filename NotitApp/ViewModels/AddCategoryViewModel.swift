@@ -15,9 +15,11 @@ final class AddCategoryViewModel: ObservableObject {
     @Published private(set) var didSave = false
 
     private let useCase: CategoryUseCase
+    private let analytics: AnalyticsLogging
 
-    init(useCase: CategoryUseCase) {
+    init(useCase: CategoryUseCase, analytics: AnalyticsLogging = NoOpAnalyticsLogger()) {
         self.useCase = useCase
+        self.analytics = analytics
     }
 
     /// Same rule as notes: no name, no save.
@@ -33,8 +35,10 @@ final class AddCategoryViewModel: ObservableObject {
         let category = Category(name, color: selectedColor.rawValue)
         do {
             try await useCase.add(category)
+            analytics.logEvent("category_created", parameters: nil)
             didSave = true
         } catch {
+            analytics.recordError(error)
             errorMessage = error.localizedDescription
         }
     }

@@ -46,6 +46,7 @@ struct CategoriesListView: View {
                                 CategoryRow(category: category)
                                     .contentShape(Rectangle())
                                     .onTapGesture { path.append(category) }
+                                    .accessibilityIdentifier("categories.row.\(category.id)")
                                     .listRowBackground(Color.clear)
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0))
@@ -182,6 +183,7 @@ struct CategoryRow: View {
                 Text("\(category.notes.count) notas")
                     .font(.system(size: 13))
                     .foregroundStyle(LiquidGlass.inkSecondary)
+                    .accessibilityIdentifier("categories.row.\(category.id).noteCount")
             }
 
             Spacer()

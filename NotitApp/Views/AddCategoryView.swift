@@ -42,6 +42,7 @@ struct AddCategoryView: View {
                 TextField("Nombre", text: $viewModel.name)
                     .font(.system(size: 17, weight: .semibold))
                     .accessibilityLabel(Text("Nombre"))
+                    .accessibilityIdentifier("addCategory.nameField")
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
                     .glassSurface(cornerRadius: 18)
@@ -137,6 +138,7 @@ struct AddCategoryView: View {
             .buttonStyle(GradientPillButtonStyle(tint: LiquidGlass.primary))
             .disabled(!viewModel.canSave)
             .opacity(viewModel.canSave ? 1 : 0.4)
+            .accessibilityIdentifier("addCategory.saveButton")
         }
     }
 }

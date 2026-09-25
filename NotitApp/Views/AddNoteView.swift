@@ -48,6 +48,7 @@ struct AddNoteView: View {
                 TextField("Título", text: $viewModel.title)
                     .font(.system(size: 19, weight: .bold))
                     .accessibilityLabel(Text("Título"))
+                    .accessibilityIdentifier("addNote.titleField")
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
                     .glassSurface(cornerRadius: 18)
@@ -119,6 +120,7 @@ struct AddNoteView: View {
                         // announce as "Text Editor, blank" with no hint.
                         .accessibilityLabel(Text("Nota"))
                         .accessibilityHint(viewModel.value.isEmpty ? Text("Escribí tu nota...") : Text(""))
+                        .accessibilityIdentifier("addNote.bodyEditor")
                         .focused($focusedField, equals: .body)
                 }
                 .padding(16)
@@ -177,6 +179,7 @@ struct AddNoteView: View {
             .buttonStyle(GradientPillButtonStyle(tint: LiquidGlass.primary))
             .disabled(!viewModel.canSave)
             .opacity(viewModel.canSave ? 1 : 0.4)
+            .accessibilityIdentifier("addNote.saveButton")
         }
     }
 }

@@ -9,11 +9,22 @@
 /* Begin PBXBuildFile section */
 		03C9021F3066E8A700FC771D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 03C9021E3066E8A700FC771D /* FirebaseAnalytics */; };
 		03C902213066E8A700FC771D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 03C902203066E8A700FC771D /* FirebaseCrashlytics */; };
+		6538BA760FF9BE77D8F1173B /* CategoryCountUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC14AB8689D2B25B81C42DE /* CategoryCountUITests.swift */; };
+		7EFC84151818DDB085814467 /* NoteCreationFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D594206B8A8F1430D3153D35 /* NoteCreationFlowUITests.swift */; };
 		AD2F39A8589A51D84A4DA3A5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FD9B8726001094219B7A6F /* Foundation.framework */; };
+		B502558B2F71AA30A9E39F5F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FD9B8726001094219B7A6F /* Foundation.framework */; };
+		C78CA5943C97AECC0B41D848 /* LaunchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF8EF3BCBFBBC7E148F43F8 /* LaunchHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		37197A060AE7B30AA87885CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03A748AD3040767E00F49C45 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03A748B43040767E00F49C45;
+			remoteInfo = NotitApp;
+		};
+		6DD650562564A9D43B95F774 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 03A748AD3040767E00F49C45 /* Project object */;
 			proxyType = 1;
@@ -25,17 +36,25 @@
 /* Begin PBXFileReference section */
 		03A748B53040767E00F49C45 /* NotitApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotitApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D9F7B1266EAA4A332D77CF8 /* NotitAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotitAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DC14AB8689D2B25B81C42DE /* CategoryCountUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CategoryCountUITests.swift; sourceTree = "<group>"; };
+		9202B18D81D50B22AC67DC0D /* NotitAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotitAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D594206B8A8F1430D3153D35 /* NoteCreationFlowUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NoteCreationFlowUITests.swift; sourceTree = "<group>"; };
 		E6FD9B8726001094219B7A6F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		ECF8EF3BCBFBBC7E148F43F8 /* LaunchHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		03A748B73040767E00F49C45 /* NotitApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = NotitApp;
 			sourceTree = "<group>";
 		};
 		DB150E076353DD434584F608 /* NotitAppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = NotitAppTests;
 			sourceTree = "<group>";
 		};
@@ -48,6 +67,14 @@
 			files = (
 				03C9021F3066E8A700FC771D /* FirebaseAnalytics in Frameworks */,
 				03C902213066E8A700FC771D /* FirebaseCrashlytics in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63688E38420BBBA47689FC6F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B502558B2F71AA30A9E39F5F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +96,7 @@
 				03A748B63040767E00F49C45 /* Products */,
 				F3607BE3685B6CE0CBD3F422 /* Frameworks */,
 				DB150E076353DD434584F608 /* NotitAppTests */,
+				8A6A8E2660B7199B0B0B336E /* NotitAppUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,8 +105,20 @@
 			children = (
 				03A748B53040767E00F49C45 /* NotitApp.app */,
 				5D9F7B1266EAA4A332D77CF8 /* NotitAppTests.xctest */,
+				9202B18D81D50B22AC67DC0D /* NotitAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8A6A8E2660B7199B0B0B336E /* NotitAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7DC14AB8689D2B25B81C42DE /* CategoryCountUITests.swift */,
+				ECF8EF3BCBFBBC7E148F43F8 /* LaunchHelper.swift */,
+				D594206B8A8F1430D3153D35 /* NoteCreationFlowUITests.swift */,
+			);
+			name = NotitAppUITests;
+			path = NotitAppUITests;
 			sourceTree = "<group>";
 		};
 		EF46BF1247965C693CB97FD1 /* iOS */ = {
@@ -142,6 +182,24 @@
 			productReference = 5D9F7B1266EAA4A332D77CF8 /* NotitAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		F901F450487CD89A00EFE8D7 /* NotitAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E7C40A1204AA0EE8769EDCB /* Build configuration list for PBXNativeTarget "NotitAppUITests" */;
+			buildPhases = (
+				A4841CFD58DBFE7359DE4CFC /* Sources */,
+				63688E38420BBBA47689FC6F /* Frameworks */,
+				5D5D92C39890182425D63531 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A4E52515B379754C529CE35A /* PBXTargetDependency */,
+			);
+			name = NotitAppUITests;
+			productName = NotitAppUITests;
+			productReference = 9202B18D81D50B22AC67DC0D /* NotitAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -154,6 +212,10 @@
 				TargetAttributes = {
 					03A748B43040767E00F49C45 = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					F901F450487CD89A00EFE8D7 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 03A748B43040767E00F49C45;
 					};
 				};
 			};
@@ -177,12 +239,20 @@
 			targets = (
 				03A748B43040767E00F49C45 /* NotitApp */,
 				E990FD43C8BF5F58325B6507 /* NotitAppTests */,
+				F901F450487CD89A00EFE8D7 /* NotitAppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		03A748B33040767E00F49C45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D5D92C39890182425D63531 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -234,9 +304,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A4841CFD58DBFE7359DE4CFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6538BA760FF9BE77D8F1173B /* CategoryCountUITests.swift in Sources */,
+				C78CA5943C97AECC0B41D848 /* LaunchHelper.swift in Sources */,
+				7EFC84151818DDB085814467 /* NoteCreationFlowUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A4E52515B379754C529CE35A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotitApp;
+			target = 03A748B43040767E00F49C45 /* NotitApp */;
+			targetProxy = 6DD650562564A9D43B95F774 /* PBXContainerItemProxy */;
+		};
 		E2125D967EAE7970FFD99068 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = NotitApp;
@@ -456,6 +542,39 @@
 			};
 			name = Debug;
 		};
+		7985F8C5067775A075E552FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9HY9G7NYSB;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nicovma.NotitAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = NotitApp;
+			};
+			name = Debug;
+		};
+		BD20D1A98E844CAD2166C310 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9HY9G7NYSB;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nicovma.NotitAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = NotitApp;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -482,6 +601,15 @@
 			buildConfigurations = (
 				31431FD436E285BF50D6D1FF /* Release */,
 				32B5E9AFC27DDC19E22668C4 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E7C40A1204AA0EE8769EDCB /* Build configuration list for PBXNativeTarget "NotitAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD20D1A98E844CAD2166C310 /* Release */,
+				7985F8C5067775A075E552FC /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

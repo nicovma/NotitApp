@@ -21,7 +21,15 @@ struct NotitAppApp: App {
             FirebaseApp.configure()
         }
         do {
-            modelContainer = try ModelContainer(for: Note.self, Category.self)
+            if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+                // In-memory store: guarantees a clean, empty state per UI
+                // test run instead of accumulating notes/categories across
+                // runs in the on-disk store used by normal launches.
+                let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+                modelContainer = try ModelContainer(for: Note.self, Category.self, configurations: configuration)
+            } else {
+                modelContainer = try ModelContainer(for: Note.self, Category.self)
+            }
         } catch {
             fatalError("No se pudo inicializar SwiftData: \(error)")
         }

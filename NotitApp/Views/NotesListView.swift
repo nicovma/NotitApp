@@ -56,6 +56,7 @@ struct NotesListView: View {
                                     NoteCard(note: note)
                                         .contentShape(Rectangle())
                                         .onTapGesture { path.append(note) }
+                                        .accessibilityIdentifier("notes.row.\(note.id)")
                                         .listRowBackground(Color.clear)
                                         .listRowSeparator(.hidden)
                                         .listRowInsets(EdgeInsets(top: 7, leading: 0, bottom: 7, trailing: 0))
@@ -147,6 +148,7 @@ struct NotesListView: View {
                     .glassCircle()
             }
             .accessibilityLabel(Text("Nueva nota"))
+            .accessibilityIdentifier("notes.addButton")
         }
         .padding(.bottom, 16)
     }
@@ -173,6 +175,7 @@ struct NotesListView: View {
                 .foregroundStyle(LiquidGlass.inkSecondary)
             Spacer()
         }
+        .accessibilityIdentifier("notes.emptyState")
     }
 
 }

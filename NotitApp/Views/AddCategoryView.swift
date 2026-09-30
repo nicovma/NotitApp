@@ -178,9 +178,11 @@ struct ColorSwatch: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         AddCategoryView(AddCategoryViewModel(useCase: MockCategoryUseCase()))
     }
     .environmentObject(TabBarVisibility())
 }
+#endif

@@ -139,9 +139,11 @@ struct EditCategoryView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         EditCategoryView(EditCategoryViewModel(category: Category("Trabajo", color: "BLUE"), useCase: MockCategoryUseCase()))
     }
     .environmentObject(TabBarVisibility())
 }
+#endif

@@ -149,6 +149,7 @@ struct EditNoteView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let category = Category("Trabajo", color: "BLUE")
     let note = Note("Ideas para el rediseño", value: "Repasar el flujo de onboarding.", category: category, createdAt: .now)
@@ -156,3 +157,4 @@ struct EditNoteView: View {
         EditNoteView(EditNoteViewModel(note: note, noteUseCase: MockNoteUseCase(), categoryUseCase: MockCategoryUseCase()))
     }
 }
+#endif

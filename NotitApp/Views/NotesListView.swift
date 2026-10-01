@@ -242,6 +242,7 @@ struct NoteCard: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     NotesListView(
@@ -250,3 +251,4 @@ struct NoteCard: View {
     )
     .environmentObject(TabBarVisibility())
 }
+#endif

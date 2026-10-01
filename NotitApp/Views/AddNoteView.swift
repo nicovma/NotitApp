@@ -199,9 +199,11 @@ struct AddNoteView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         AddNoteView(AddNoteViewModel(noteUseCase: MockNoteUseCase(), categoryUseCase: MockCategoryUseCase(), noteSuggestionUseCase: MockNoteSuggestionUseCase()))
     }
     .environmentObject(TabBarVisibility())
 }
+#endif

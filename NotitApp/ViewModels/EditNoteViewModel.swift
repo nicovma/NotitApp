@@ -18,14 +18,16 @@ final class EditNoteViewModel: ObservableObject {
 
     private let noteUseCase: NoteUseCase
     private let categoryUseCase: CategoryUseCase
+    private let analytics: AnalyticsLogging
 
-    init(note: Note, noteUseCase: NoteUseCase, categoryUseCase: CategoryUseCase) {
+    init(note: Note, noteUseCase: NoteUseCase, categoryUseCase: CategoryUseCase, analytics: AnalyticsLogging = NoOpAnalyticsLogger()) {
         self.note = note
         self.title = note.title
         self.value = note.value
         self.selectedCategory = note.category
         self.noteUseCase = noteUseCase
         self.categoryUseCase = categoryUseCase
+        self.analytics = analytics
     }
 
     /// Same rule as creating a note: no title, no category, no save.
@@ -34,7 +36,7 @@ final class EditNoteViewModel: ObservableObject {
     }
 
     func makeAddCategoryViewModel() -> AddCategoryViewModel {
-        AddCategoryViewModel(useCase: categoryUseCase)
+        AddCategoryViewModel(useCase: categoryUseCase, analytics: analytics)
     }
 
     func loadCategories() async {
@@ -46,7 +48,8 @@ final class EditNoteViewModel: ObservableObject {
     }
 
     func saveChanges() async {
-        guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
             errorMessage = String(localized: "El título no puede estar vacío")
             return
         }
@@ -54,13 +57,21 @@ final class EditNoteViewModel: ObservableObject {
             errorMessage = String(localized: "Elegí una categoría")
             return
         }
-        note.title = title
+        // `note` is a live SwiftData model: mutate it only for the save attempt
+        // and roll back on failure, so a failed update doesn't leave edits that
+        // were never persisted showing up everywhere else in the app.
+        let original = (title: note.title, value: note.value, category: note.category)
+        note.title = trimmedTitle
         note.value = value
         note.category = category
         do {
             try await noteUseCase.update(note)
             didSave = true
         } catch {
+            note.title = original.title
+            note.value = original.value
+            note.category = original.category
+            analytics.recordError(error)
             errorMessage = error.localizedDescription
         }
     }

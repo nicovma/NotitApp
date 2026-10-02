@@ -201,6 +201,7 @@ struct CategoryRow: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     CategoriesListView(
@@ -209,3 +210,4 @@ struct CategoryRow: View {
     )
     .environmentObject(TabBarVisibility())
 }
+#endif

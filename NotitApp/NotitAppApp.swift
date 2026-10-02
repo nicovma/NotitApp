@@ -18,7 +18,7 @@ struct NotitAppApp: App {
         // Skip under XCTest (unit or UI) — keeps test runs out of the real
         // Firebase project without a separate test-only entry point.
         if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
-            FirebaseApp.configure()
+            Self.configureFirebase()
         }
         do {
             if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
@@ -36,6 +36,23 @@ struct NotitAppApp: App {
         if ProcessInfo.processInfo.arguments.contains("--seed-screenshot-data") {
             Self.seedScreenshotData(into: modelContainer.mainContext)
         }
+    }
+
+    /// Debug builds (local runs, CI) load `GoogleService-Info-Dev.plist`;
+    /// Release loads `-Prod.plist` — chosen explicitly here instead of the
+    /// SDK's default single-file auto-discovery, so local/CI activity never
+    /// lands in the same Firebase project as real users.
+    private static func configureFirebase() {
+#if DEBUG
+        let plistName = "GoogleService-Info-Dev"
+#else
+        let plistName = "GoogleService-Info-Prod"
+#endif
+        guard let path = Bundle.main.path(forResource: plistName, ofType: "plist"),
+              let options = FirebaseOptions(contentsOfFile: path) else {
+            fatalError("Falta \(plistName).plist en el bundle de la app")
+        }
+        FirebaseApp.configure(options: options)
     }
 
     /// Fills the store with a few sample notes/categories so README/App

@@ -4,6 +4,9 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 ARCH_PROPOSAL.md
-GoogleService-Info.plist
+APP_STORE_RELEASE_PLAYBOOK.md
+GoogleService-Info-Dev.plist
+GoogleService-Info-Prod.plist
+Resources/Config.xcconfig
 
 .worktrees/

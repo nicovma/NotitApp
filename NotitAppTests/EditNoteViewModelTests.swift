@@ -62,4 +62,45 @@ struct EditNoteViewModelTests {
         #expect(note.value == "Contenido editado")
         #expect(note.category == newCategory)
     }
+
+    @Test func saveChanges_trimsTitleBeforeSaving() async {
+        let note = makeNote(category: Category("Trabajo", color: "BLUE"))
+        let sut = EditNoteViewModel(note: note, noteUseCase: MockNoteUseCase(), categoryUseCase: MockCategoryUseCase())
+        sut.title = "  Título editado  "
+
+        await sut.saveChanges()
+
+        #expect(note.title == "Título editado")
+    }
+
+    @Test func saveChanges_whenUpdateFails_restoresOriginalNoteAndRecordsError() async {
+        let originalCategory = Category("Trabajo", color: "BLUE")
+        let note = makeNote(category: originalCategory)
+        let analytics = SpyAnalyticsLogger()
+        let sut = EditNoteViewModel(note: note, noteUseCase: ThrowingNoteUseCase(), categoryUseCase: MockCategoryUseCase(), analytics: analytics)
+        sut.title = "Cambiado"
+        sut.value = "Contenido cambiado"
+        sut.selectedCategory = Category("Viajes", color: "RED")
+
+        await sut.saveChanges()
+
+        #expect(note.title == "Original")
+        #expect(note.value == "Contenido original")
+        #expect(note.category === originalCategory)
+        #expect(analytics.recordedErrorCount == 1)
+        #expect(sut.errorMessage != nil)
+        #expect(!sut.didSave)
+    }
+
+    @Test func makeAddCategoryViewModel_sharesAnalytics() async {
+        let note = makeNote(category: Category("Trabajo", color: "BLUE"))
+        let analytics = SpyAnalyticsLogger()
+        let sut = EditNoteViewModel(note: note, noteUseCase: MockNoteUseCase(), categoryUseCase: MockCategoryUseCase(), analytics: analytics)
+        let addCategory = sut.makeAddCategoryViewModel()
+        addCategory.name = "Nueva"
+
+        await addCategory.createCategory()
+
+        #expect(analytics.loggedEvents == ["category_created"])
+    }
 }

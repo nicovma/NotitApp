@@ -32,7 +32,7 @@ final class CompositionRoot {
     }
 
     func makeEditNoteViewModel(for note: Note) -> EditNoteViewModel {
-        EditNoteViewModel(note: note, noteUseCase: makeNoteUseCase(), categoryUseCase: makeCategoryUseCase())
+        EditNoteViewModel(note: note, noteUseCase: makeNoteUseCase(), categoryUseCase: makeCategoryUseCase(), analytics: analytics)
     }
 
     func makeCategoryListViewModel() -> CategoryListViewModel {
@@ -44,7 +44,7 @@ final class CompositionRoot {
     }
 
     func makeEditCategoryViewModel(for category: Category) -> EditCategoryViewModel {
-        EditCategoryViewModel(category: category, useCase: makeCategoryUseCase())
+        EditCategoryViewModel(category: category, useCase: makeCategoryUseCase(), analytics: analytics)
     }
 
     func makeCategoryNotesViewModel(for category: Category) -> CategoryNotesViewModel {

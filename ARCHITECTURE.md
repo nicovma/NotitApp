@@ -47,9 +47,13 @@ The suggestion is never applied automatically — `SuggestionBanner` (`Views/Com
 
 ## 3. Key design decisions
 
-### `CompositionRoot` as the only SwiftData importer outside Repository
+### `CompositionRoot` as the only SwiftData wiring point outside Repository
 
-`CompositionRoot.swift` is the single place that wires a concrete `ModelContext` into concrete `SwiftData*Repository` instances, then into `Default*UseCase`s, then into ViewModels (`makeAddNoteViewModel()`, `makeEditCategoryViewModel(for:)`, etc.). No View or ViewModel ever imports `SwiftData` or sees a `ModelContext`/`ModelContainer` directly — they only see protocol types (`NoteUseCase`, `CategoryUseCase`...). This is Dependency Inversion enforced structurally, not just by convention: swapping SwiftData for another persistence mechanism would touch `CompositionRoot` and the `Repositories/Implementations` folder only. It also means a ViewModel unit test never needs a `ModelContainer` at all — only `SwiftDataRepositoryTests` does.
+`CompositionRoot.swift` is the single place that wires a concrete `ModelContext` into concrete `SwiftData*Repository` instances, then into `Default*UseCase`s, then into ViewModels (`makeAddNoteViewModel()`, `makeEditCategoryViewModel(for:)`, etc.). No View or ViewModel ever imports `SwiftData` or sees a `ModelContext`/`ModelContainer` directly — they only see protocol types (`NoteUseCase`, `CategoryUseCase`...). `#Preview` blocks follow the same rule through a DEBUG-only `CompositionRoot.preview()` (`NotitApp/Previews/PreviewSupport.swift`) that owns an in-memory container. This is Dependency Inversion enforced structurally, not just by convention: swapping SwiftData for another persistence mechanism would touch `CompositionRoot`, the `Repositories/Implementations` folder, the app entry point that builds the `ModelContainer`, and the models below.
+
+**Accepted leaks, on purpose:**
+- `Note` and `Category` are `@Model` classes, and ViewModels receive and mutate them directly (e.g. `EditNoteViewModel`). Mapping them to separate plain structs would add a translation layer for a fully local, single-store app with no second persistence backend in sight — not worth it here. The cost is that a ViewModel holds a live model object, which is why the Edit ViewModels roll their changes back if the update fails.
+- `NoteSuggestion` imports `FoundationModels` because it's `@Generable`: the model's structured output is decoded straight into it. Keeping a mirror struct just to hide that import would duplicate every field and `@Guide` description for no real isolation gain — the type is only produced by `DefaultNoteSuggestionUseCase` and only read by `AddNoteViewModel`. It also means a ViewModel unit test never needs a `ModelContainer` at all — only `SwiftDataRepositoryTests` does.
 
 **Alternative considered:** a global/singleton container accessed directly from ViewModels. Rejected — it collapses the dependency direction (ViewModels would import SwiftData) and makes every ViewModel test either need a real container or a protocol seam bolted on after the fact.
 
@@ -89,8 +93,10 @@ This catch intentionally never surfaces to the UI (no `errorMessage`, no alert).
 ## 4. Testing strategy
 
 - **ViewModels** (`NotitAppTests/*ViewModelTests.swift`) — tested against mock UseCases (`Mocks/Mock*UseCase.swift`, `#if DEBUG`-only) and throwing stub UseCases (`TestDoubles.swift`). Covers validation rules (`canSave`, empty title/name), success paths (state transitions to `.loaded`, `didSave`), and error paths (state transitions to `.error`, `errorMessage` set) — all without touching SwiftData.
+- **UseCases** (`Default*UseCaseTests.swift`) — tested against spy repositories (`TestDoubles.swift`): delegation, error propagation, and `DefaultNoteUseCase.update` bumping `updatedAt`. For `DefaultNoteSuggestionUseCase`, only the pure prompt assembly (`makePrompt`) is covered.
 - **Repositories** (`SwiftDataRepositoryTests.swift`) — the one integration suite: real `SwiftDataNoteRepository`/`SwiftDataCategoryRepository` against a real, in-memory `ModelContainer` (see §3's retention note for why the container is captured in a local `let` for the test's duration). This is deliberately the only place SwiftData itself is exercised — every other layer treats persistence as an opaque protocol.
-- **Not tested**: Views (no snapshot/UI tests), the "Liquid Glass" design system components, and `DefaultNoteSuggestionUseCase`'s actual call into `FoundationModels`/`SystemLanguageModel` — there's no seam to fake Apple's on-device model, and CI runners aren't guaranteed to have Apple Intelligence available (see §5). `AddNoteViewModel`'s suggestion-handling logic *is* tested, via `MockNoteSuggestionUseCase`/`ThrowingNoteSuggestionUseCase` — only the real model call itself is out of scope.
+- **UI** (`NotitAppUITests`) — XCUITest suites for the note creation flow and the per-category note count, launched with `--ui-testing` (in-memory store, clean state per run) and a pinned Spanish locale so they don't depend on the runner's language.
+- **Not tested**: snapshot tests of Views, the "Liquid Glass" design system components, and `DefaultNoteSuggestionUseCase`'s actual call into `FoundationModels`/`SystemLanguageModel` — there's no seam to fake Apple's on-device model, and CI runners aren't guaranteed to have Apple Intelligence available (see §5). `AddNoteViewModel`'s suggestion-handling logic *is* tested, via `MockNoteSuggestionUseCase`/`ThrowingNoteSuggestionUseCase` — only the real model call itself is out of scope.
 
 ## 5. Known trade-offs
 

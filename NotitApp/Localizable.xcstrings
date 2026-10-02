@@ -105,7 +105,6 @@
       }
     },
     "Categoría" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -396,7 +395,14 @@
       }
     },
     "Política de privacidad" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy policy"
+          }
+        }
+      }
     },
     "Recién" : {
       "localizations" : {

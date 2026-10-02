@@ -27,6 +27,10 @@ final class AddNoteViewModel: ObservableObject {
     private let noteSuggestionUseCase: NoteSuggestionUseCase
     private let analytics: AnalyticsLogging
     private var debounceTask: Task<Void, Never>?
+    /// Bumped per suggestion request; only the latest one may publish its
+    /// result or clear `isSuggesting` (debounce + "another suggestion" can
+    /// overlap, and the first to finish must not hide the second's spinner).
+    private var latestSuggestionRequestID = 0
 
     init(noteUseCase: NoteUseCase, categoryUseCase: CategoryUseCase, noteSuggestionUseCase: NoteSuggestionUseCase, analytics: AnalyticsLogging = NoOpAnalyticsLogger()) {
         self.noteUseCase = noteUseCase
@@ -78,13 +82,17 @@ final class AddNoteViewModel: ObservableObject {
 
     func requestSuggestion(avoiding previousSuggestion: NoteSuggestion? = nil) async {
         let sourceValue = value
+        latestSuggestionRequestID += 1
+        let requestID = latestSuggestionRequestID
         isSuggesting = true
-        defer { isSuggesting = false }
+        defer {
+            if requestID == latestSuggestionRequestID { isSuggesting = false }
+        }
         do {
             let result = try await noteSuggestionUseCase.suggest(for: sourceValue, existingCategories: categories, previousSuggestion: previousSuggestion)
-            // The user may have kept typing while the model was thinking —
-            // discard a suggestion that no longer matches the current text.
-            guard sourceValue == value else { return }
+            // The user may have kept typing, or asked again, while the model was
+            // thinking — discard a suggestion that is no longer the latest one.
+            guard requestID == latestSuggestionRequestID, sourceValue == value else { return }
             suggestion = result
             suggestedCategory = categories.first { $0.name.caseInsensitiveCompare(result.categoryName) == .orderedSame }
         } catch {
@@ -128,7 +136,8 @@ final class AddNoteViewModel: ObservableObject {
     }
 
     func createNote() async {
-        guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
             errorMessage = String(localized: "El título no puede estar vacío")
             return
         }
@@ -136,7 +145,7 @@ final class AddNoteViewModel: ObservableObject {
             errorMessage = String(localized: "Elegí una categoría")
             return
         }
-        let note = Note(title, value: value, category: category, createdAt: .now)
+        let note = Note(trimmedTitle, value: value, category: category, createdAt: .now)
         do {
             try await noteUseCase.add(note)
             analytics.logEvent("note_created", parameters: ["category": category.name])

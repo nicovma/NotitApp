@@ -32,7 +32,6 @@ final class DefaultNoteSuggestionUseCase: NoteSuggestionUseCase {
     }
 
     func suggest(for text: String, existingCategories: [Category], previousSuggestion: NoteSuggestion?) async throws -> NoteSuggestion {
-        let categoryNames = existingCategories.map(\.name).joined(separator: ", ")
         let languageCode = Bundle.main.preferredLocalizations.first ?? "es"
         let languageName = Locale(identifier: "en_US").localizedString(forLanguageCode: languageCode) ?? "Spanish"
         let session = LanguageModelSession(
@@ -54,6 +53,18 @@ final class DefaultNoteSuggestionUseCase: NoteSuggestionUseCase {
             título como categoría ni sugieras algo sin relación con el texto.
             """
         )
+        let response = try await session.respond(
+            to: Self.makePrompt(for: text, existingCategories: existingCategories, previousSuggestion: previousSuggestion),
+            generating: NoteSuggestion.self,
+            options: GenerationOptions(sampling: .random(probabilityThreshold: 0.9), temperature: 0.9)
+        )
+        return response.content
+    }
+
+    /// Pure prompt assembly, kept apart from the `LanguageModelSession` call so
+    /// it can be unit-tested — Apple's on-device model itself has no test seam.
+    static func makePrompt(for text: String, existingCategories: [Category], previousSuggestion: NoteSuggestion?) -> String {
+        let categoryNames = existingCategories.map(\.name).joined(separator: ", ")
         var prompt = """
         Categorías existentes: \(categoryNames.isEmpty ? "ninguna" : categoryNames)
 
@@ -68,11 +79,6 @@ final class DefaultNoteSuggestionUseCase: NoteSuggestionUseCase {
             y no le sirvió al usuario. Dale una alternativa distinta, no repitas ese título ni esa categoría.
             """
         }
-        let response = try await session.respond(
-            to: prompt,
-            generating: NoteSuggestion.self,
-            options: GenerationOptions(sampling: .random(probabilityThreshold: 0.9), temperature: 0.9)
-        )
-        return response.content
+        return prompt
     }
 }

@@ -55,4 +55,30 @@ struct EditCategoryViewModelTests {
         #expect(category.name == "Personal")
         #expect(category.color == CategoryColor.green.rawValue)
     }
+
+    @Test func saveChanges_trimsNameBeforeSaving() async {
+        let category = Category("Trabajo", color: "BLUE")
+        let sut = EditCategoryViewModel(category: category, useCase: MockCategoryUseCase())
+        sut.name = "  Laburo  "
+
+        await sut.saveChanges()
+
+        #expect(category.name == "Laburo")
+    }
+
+    @Test func saveChanges_whenUpdateFails_restoresOriginalCategoryAndRecordsError() async {
+        let category = Category("Trabajo", color: "BLUE")
+        let analytics = SpyAnalyticsLogger()
+        let sut = EditCategoryViewModel(category: category, useCase: ThrowingCategoryUseCase(), analytics: analytics)
+        sut.name = "Cambiada"
+        sut.selectedColor = .red
+
+        await sut.saveChanges()
+
+        #expect(category.name == "Trabajo")
+        #expect(category.color == "BLUE")
+        #expect(analytics.recordedErrorCount == 1)
+        #expect(sut.errorMessage != nil)
+        #expect(!sut.didSave)
+    }
 }

@@ -28,11 +28,12 @@ final class AddCategoryViewModel: ObservableObject {
     }
 
     func createCategory() async {
-        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
             errorMessage = String(localized: "El nombre no puede estar vacío")
             return
         }
-        let category = Category(name, color: selectedColor.rawValue)
+        let category = Category(trimmedName, color: selectedColor.rawValue)
         do {
             try await useCase.add(category)
             analytics.logEvent("category_created", parameters: nil)

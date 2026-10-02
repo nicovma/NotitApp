@@ -28,4 +28,14 @@ struct AddCategoryViewModelTests {
         #expect(sut.didSave)
         #expect(sut.errorMessage == nil)
     }
+
+    @Test func createCategory_trimsNameBeforeSaving() async {
+        let useCase = MockCategoryUseCase()
+        let sut = AddCategoryViewModel(useCase: useCase)
+        sut.name = "  Gimnasio  "
+
+        await sut.createCategory()
+
+        #expect(useCase.categories.last?.name == "Gimnasio")
+    }
 }

@@ -4,7 +4,6 @@
 //
 import Foundation
 import SwiftUI
-import SwiftData
 
 struct CategoryNotesListView: View {
 
@@ -119,13 +118,12 @@ struct CategoryNotesListView: View {
 
 #if DEBUG
 #Preview {
-    let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     let category = Category("Trabajo", color: "BLUE")
     NavigationStack {
         CategoryNotesListView(
             CategoryNotesViewModel(category: category, useCase: MockNoteUseCase()),
             path: .constant(NavigationPath()),
-            root: CompositionRoot(modelContext: container.mainContext)
+            root: .preview()
         )
     }
     .environmentObject(TabBarVisibility())

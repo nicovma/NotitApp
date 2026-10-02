@@ -131,4 +131,38 @@ struct AddNoteViewModelTests {
         #expect(!suggestionUseCase.suggestCalled)
         #expect(sut.suggestion == nil)
     }
+
+    @Test func createNote_trimsTitleBeforeSaving() async {
+        let noteUseCase = MockNoteUseCase()
+        let sut = AddNoteViewModel(noteUseCase: noteUseCase, categoryUseCase: MockCategoryUseCase(), noteSuggestionUseCase: MockNoteSuggestionUseCase())
+        await sut.loadCategories()
+        sut.title = "  Nueva nota  "
+
+        await sut.createNote()
+
+        #expect(noteUseCase.notes.last?.title == "Nueva nota")
+    }
+
+    @Test func overlappingSuggestionRequests_onlyTheLatestOneClearsSpinnerAndPublishes() async {
+        let suggestionUseCase = GatedNoteSuggestionUseCase()
+        let sut = AddNoteViewModel(noteUseCase: MockNoteUseCase(), categoryUseCase: MockCategoryUseCase(), noteSuggestionUseCase: suggestionUseCase)
+        sut.value = "Comprar leche, pan y huevos en el súper"
+
+        let first = Task { await sut.requestSuggestion() }
+        await suggestionUseCase.waitForPendingCount(1)
+        let second = Task { await sut.requestSuggestion() }
+        await suggestionUseCase.waitForPendingCount(2)
+
+        suggestionUseCase.resume(0, with: NoteSuggestion(title: "Vieja", categoryName: "Compras", isNewCategory: false))
+        await first.value
+
+        #expect(sut.isSuggesting)
+        #expect(sut.suggestion == nil)
+
+        suggestionUseCase.resume(1, with: NoteSuggestion(title: "Nueva", categoryName: "Compras", isNewCategory: false))
+        await second.value
+
+        #expect(!sut.isSuggesting)
+        #expect(sut.suggestion?.title == "Nueva")
+    }
 }

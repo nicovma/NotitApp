@@ -49,7 +49,7 @@ xcodebuild test -project NotitApp.xcodeproj -scheme NotitApp \
   -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
 ```
 
-Unit tests cover all four ViewModels (success and error paths) against mock UseCases. A separate integration suite exercises both SwiftData repositories against a real, in-memory `ModelContainer` — created fresh per test and kept alive for the test's duration, since a `ModelContext` doesn't retain its own `ModelContainer`.
+Unit tests cover all seven ViewModels (success and error paths) against mock UseCases, and the three UseCases against spy repositories (including the one rule a use case owns: an edit bumps `updatedAt`, which drives the list order). A separate integration suite exercises both SwiftData repositories against a real, in-memory `ModelContainer` — created fresh per test and kept alive for the test's duration, since a `ModelContext` doesn't retain its own `ModelContainer`. An XCUITest target covers the note creation flow and the per-category note count end to end, against an in-memory store.
 
 CI (GitHub Actions) builds and runs the full suite on every push and pull request against `main`/`develop`.
 

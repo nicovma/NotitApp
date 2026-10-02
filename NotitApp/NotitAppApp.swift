@@ -31,7 +31,7 @@ struct NotitAppApp: App {
                 modelContainer = try ModelContainer(for: Note.self, Category.self)
             }
         } catch {
-            fatalError("No se pudo inicializar SwiftData: \(error)")
+            fatalError("Could not initialize SwiftData: \(error)")
         }
         if ProcessInfo.processInfo.arguments.contains("--seed-screenshot-data") {
             Self.seedScreenshotData(into: modelContainer.mainContext)
@@ -50,7 +50,7 @@ struct NotitAppApp: App {
 #endif
         guard let path = Bundle.main.path(forResource: plistName, ofType: "plist"),
               let options = FirebaseOptions(contentsOfFile: path) else {
-            fatalError("Falta \(plistName).plist en el bundle de la app")
+            fatalError("Missing \(plistName).plist in the app bundle")
         }
         FirebaseApp.configure(options: options)
     }

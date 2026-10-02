@@ -6,7 +6,6 @@
 //
 import Foundation
 import SwiftUI
-import SwiftData
 
 struct CategoriesListView: View {
 
@@ -51,12 +50,11 @@ struct CategoriesListView: View {
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0))
                                     .swipeActions {
-                                        // Sin `role: .destructive`: con ese role, iOS anima la fila
-                                        // como si ya estuviera borrada apenas se toca el botón — antes
-                                        // de que corra esta closure. Como acá todavía no borramos nada
-                                        // (solo mostramos el diálogo de confirmación), esa animación
-                                        // automática hace que la fila "desaparezca y vuelva a aparecer"
-                                        // antes de que se vea el diálogo.
+                                        // No `role: .destructive`: with that role, iOS animates the row as if
+                                        // it were already deleted the moment the button is tapped — before this
+                                        // closure even runs. Since nothing is deleted here yet (it only shows
+                                        // the confirmation), that automatic animation makes the row "disappear
+                                        // and come back" before the dialog appears.
                                         Button("Eliminar") {
                                             categoryPendingDeletion = category
                                         }
@@ -98,11 +96,11 @@ struct CategoriesListView: View {
             }
             .navigationBarHidden(true)
             .task { await viewModel.fetchCategories() }
-            // .alert, no .confirmationDialog: en iOS 26, confirmationDialog puede
-            // renderizarse como un popover "Liquid Glass" en vez de action sheet,
-            // y en ese modo pierde el botón Cancelar (bug de Apple, sin fix de
-            // nuestro lado — probado anclándolo a la fila y persiste). Un alert
-            // sí/no es además la API más apropiada para esta confirmación binaria.
+            // .alert, not .confirmationDialog: on iOS 26, confirmationDialog can
+            // render as a "Liquid Glass" popover instead of an action sheet, and in
+            // that mode it loses its Cancel button (Apple bug, FB20644893, no fix on
+            // our side — anchoring it to the row was tried and it persists). A yes/no
+            // alert is also the more appropriate API for a binary confirmation.
             .alert(
                 categoryPendingDeletion.map { String(format: String(localized: "¿Eliminar \"%@\"?"), $0.name) } ?? "",
                 isPresented: Binding(
@@ -128,10 +126,10 @@ struct CategoriesListView: View {
                 }
             }
             .onChange(of: isAddingCategory) {
-                // CategoriesListView vive todo el ciclo de vida de la app dentro
-                // del TabView, así que su .task inicial no vuelve a correr al
-                // volver de "Nueva categoría" — sin este refetch explícito, la
-                // categoría se guarda pero la lista se queda con el estado viejo.
+                // CategoriesListView lives for the whole app lifetime inside the
+                // TabView, so its initial .task never runs again when coming back from
+                // "Nueva categoría" — without this explicit refetch, the category is
+                // saved but the list keeps showing the stale state.
                 if !isAddingCategory {
                     Task { await viewModel.fetchCategories() }
                 }
@@ -203,10 +201,9 @@ struct CategoryRow: View {
 
 #if DEBUG
 #Preview {
-    let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     CategoriesListView(
         CategoryListViewModel(useCase: MockCategoryUseCase()),
-        root: CompositionRoot(modelContext: container.mainContext)
+        root: .preview()
     )
     .environmentObject(TabBarVisibility())
 }

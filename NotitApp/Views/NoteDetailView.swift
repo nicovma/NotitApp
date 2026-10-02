@@ -6,7 +6,6 @@
 //
 import Foundation
 import SwiftUI
-import SwiftData
 
 struct NoteDetailView: View {
 
@@ -88,8 +87,8 @@ struct NoteDetailView: View {
                 EditNoteView(root.makeEditNoteViewModel(for: note))
             }
         }
-        // .alert, no .confirmationDialog: mismo bug de iOS 26 documentado en
-        // CategoriesListView (confirmationDialog puede perder el botón Cancelar).
+        // .alert, not .confirmationDialog: same iOS 26 bug documented in
+        // CategoriesListView (confirmationDialog can lose its Cancel button).
         .alert(
             String(format: String(localized: "¿Eliminar \"%@\"?"), note.title),
             isPresented: $isConfirmingDelete
@@ -145,11 +144,10 @@ struct NoteDetailView: View {
 }
 
 #Preview {
-    let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     NavigationStack {
         NoteDetailView(
             note: Note("Ideas para el rediseño", value: "Repasar el flujo de onboarding y unificar los estilos de botones antes de la demo del viernes.", category: Category("Trabajo", color: "BLUE"), createdAt: .now.addingTimeInterval(-7200)),
-            root: CompositionRoot(modelContext: container.mainContext),
+            root: .preview(),
             onDelete: {}
         )
     }

@@ -12,7 +12,7 @@ jobs:
       - name: Generate GoogleService-Info-Dev.plist
         run: |
           if [ -z "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
-            echo "::error::Falta el secret GOOGLE_SERVICE_INFO_PLIST_BASE64 en el repo — sin él este branch no puede buildear."
+            echo "::error::Missing the GOOGLE_SERVICE_INFO_PLIST_BASE64 repository secret — this branch cannot build without it."
             exit 1
           fi
           echo "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > NotitApp/GoogleService-Info-Dev.plist
@@ -36,7 +36,7 @@ jobs:
             # unrelated to this repo. Retry only that specific failure; any
             # other failure (real test/compile errors) fails immediately.
             if [ "$i" -lt "$attempts" ] && grep -q "Unable to find a device matching the provided destination specifier" /tmp/xcodebuild.log; then
-              echo "::warning::Simulador no disponible en esta imagen del runner (intento $i/$attempts), reintentando en 30s..."
+              echo "::warning::Simulator not available on this runner image (attempt $i/$attempts), retrying in 30s..."
               sleep 30
               continue
             fi

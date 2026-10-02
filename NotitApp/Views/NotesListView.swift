@@ -6,7 +6,6 @@
 //
 import Foundation
 import SwiftUI
-import SwiftData
 
 struct NotesListView: View {
 
@@ -61,9 +60,8 @@ struct NotesListView: View {
                                         .listRowSeparator(.hidden)
                                         .listRowInsets(EdgeInsets(top: 7, leading: 0, bottom: 7, trailing: 0))
                                         .swipeActions {
-                                            // Sin `role: .destructive`, ver CategoriesListView: con ese
-                                            // role iOS anima la fila como ya borrada antes de mostrar la
-                                            // confirmación.
+                                            // No `role: .destructive`, see CategoriesListView: with that role
+                                            // iOS animates the row as already deleted before the confirmation shows.
                                             Button("Eliminar") {
                                                 notePendingDeletion = note
                                             }
@@ -101,8 +99,8 @@ struct NotesListView: View {
                 AddNoteView(root.makeAddNoteViewModel())
             }
         }
-        // .alert, no .confirmationDialog: mismo bug de iOS 26 documentado en
-        // CategoriesListView (confirmationDialog puede perder el botón Cancelar).
+        // .alert, not .confirmationDialog: same iOS 26 bug documented in
+        // CategoriesListView (confirmationDialog can lose its Cancel button).
         .alert(
             notePendingDeletion.map { String(format: String(localized: "¿Eliminar \"%@\"?"), $0.title) } ?? "",
             isPresented: Binding(
@@ -123,10 +121,10 @@ struct NotesListView: View {
             Text("Esta acción no se puede deshacer.")
         }
         .onChange(of: isAddingNote) {
-            // NotesListView vive todo el ciclo de vida de la app dentro del
-            // TabView, así que su .task inicial no vuelve a correr al volver
-            // de "Nueva nota" — sin este refetch explícito, la nota se guarda
-            // pero el listado se queda con el estado viejo.
+            // NotesListView lives for the whole app lifetime inside the TabView,
+            // so its initial .task never runs again when coming back from
+            // "Nueva nota" — without this explicit refetch, the note is saved but
+            // the list keeps showing the stale state.
             if !isAddingNote {
                 Task { await viewModel.fetchNotes() }
             }
@@ -244,10 +242,9 @@ struct NoteCard: View {
 
 #if DEBUG
 #Preview {
-    let container = try! ModelContainer(for: Note.self, Category.self, configurations: .init(isStoredInMemoryOnly: true))
     NotesListView(
         NoteListViewModel(useCase: MockNoteUseCase()),
-        root: CompositionRoot(modelContext: container.mainContext)
+        root: .preview()
     )
     .environmentObject(TabBarVisibility())
 }

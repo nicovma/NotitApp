@@ -24,12 +24,12 @@ A note-taking app with color-coded categories, built with SwiftUI, SwiftData, an
 View ── ViewModel ── UseCase ── Repository ── SwiftData (ModelContext)
 ```
 
-- **Repository** (`NoteRepository`, `CategoryRepository`) — the only layer that talks to SwiftData. `SwiftDataNoteRepository` and `SwiftDataCategoryRepository` wrap a `ModelContext`; nothing above this layer knows SwiftData exists.
-- **UseCase** (`NoteUseCase`, `CategoryUseCase`) — thin business layer between ViewModels and Repositories, kept as a protocol so ViewModels are testable against a mock without touching persistence.
+- **Repository** (`NoteRepository`, `CategoryRepository`) — the only layer that talks to SwiftData. `SwiftDataNoteRepository` and `SwiftDataCategoryRepository` wrap a `ModelContext`; no View, ViewModel or UseCase imports SwiftData or touches a `ModelContext`. The one deliberate exception is the models themselves: `Note`/`Category` are `@Model` classes, passed up through the layers as plain domain objects.
+- **UseCase** (`NoteUseCase`, `CategoryUseCase`, `NoteSuggestionUseCase`) — thin business layer between ViewModels and Repositories, kept as a protocol so ViewModels are testable against a mock without touching persistence.
 - **ViewModel** — `@MainActor` `ObservableObject`s exposing a `ViewModelState<T>` enum (`idle` / `loading` / `loaded` / `error`) to their View.
 - **View** — SwiftUI, no business logic.
 - **`DesignSystem`** — the "Liquid Glass" look (blurred backdrop, glass surfaces, shared tab bar) as reusable modifiers/components, kept independent of any screen.
-- **`CompositionRoot`** — the single place that wires concrete SwiftData repositories into UseCases into ViewModels. It's the only file in the app that imports SwiftData outside the Repository layer itself, keeping the dependency direction one-way (Views and ViewModels depend on protocols, never on SwiftData directly).
+- **`CompositionRoot`** — the single place that wires concrete SwiftData repositories into UseCases into ViewModels. Apart from the `@Model` classes and the app entry point that creates the `ModelContainer`, it's the only file that imports SwiftData outside the Repository layer, keeping the dependency direction one-way (Views and ViewModels depend on protocols, never on SwiftData directly). Even SwiftUI previews go through a DEBUG-only `CompositionRoot.preview()` helper instead of building a container inline.
 
 ## Tech stack
 

@@ -91,14 +91,15 @@ struct SuggestionBanner: View {
 }
 
 /// Labels each suggestion chip with what it is ("Título" / "Categoría") so
-/// the two don't read as interchangeable options.
+/// the two don't read as interchangeable options. Typed as a localized
+/// resource because a plain `String` label skips the String Catalog.
 private struct SuggestionRow<Content: View>: View {
-    let label: String
+    let label: LocalizedStringResource
     @ViewBuilder let content: Content
 
     var body: some View {
         HStack(spacing: 10) {
-            Text(label.uppercased())
+            Text(String(localized: label).uppercased())
                 .font(.system(size: 10, weight: .bold))
                 .tracking(0.3)
                 .foregroundStyle(LiquidGlass.inkTertiary)

@@ -42,3 +42,23 @@ jobs:
             fi
             exit 1
           done
+
+  # build-and-test only compiles Debug, so DEBUG-only code leaking into
+  # Release (e.g. a #Preview without #if DEBUG) used to surface only when
+  # release.yml ran on a tag. Unsigned, no secrets: it just has to compile.
+  release-build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: '26.6' }
+      - name: Stub Config.xcconfig
+        run: mkdir -p Resources && touch Resources/Config.xcconfig
+      - name: Build Release
+        run: |
+          set -o pipefail
+          xcodebuild build -project NotitApp.xcodeproj -scheme NotitApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO

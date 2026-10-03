@@ -143,6 +143,7 @@ struct NoteDetailView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         NoteDetailView(
@@ -153,3 +154,4 @@ struct NoteDetailView: View {
     }
     .environmentObject(TabBarVisibility())
 }
+#endif

@@ -15,11 +15,9 @@ struct NotitAppApp: App {
     private let modelContainer: ModelContainer
 
     init() {
-        // Skip under XCTest (unit or UI) — keeps test runs out of the real
-        // Firebase project without a separate test-only entry point.
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
-            Self.configureFirebase()
-        }
+#if !DEBUG
+        Self.configureFirebase()
+#endif
         do {
             if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
                 // In-memory store: guarantees a clean, empty state per UI
@@ -38,16 +36,12 @@ struct NotitAppApp: App {
         }
     }
 
-    /// Debug builds (local runs, CI) load `GoogleService-Info-Dev.plist`;
-    /// Release loads `-Prod.plist` — chosen explicitly here instead of the
-    /// SDK's default single-file auto-discovery, so local/CI activity never
-    /// lands in the same Firebase project as real users.
+    /// Release only. Debug builds (local runs, tests, CI) never start
+    /// Firebase: there is a single Firebase project (free-plan quota), so
+    /// this is what keeps development activity out of real user metrics.
+    /// `CompositionRoot` pairs it with `NoOpAnalyticsLogger` in Debug.
     private static func configureFirebase() {
-#if DEBUG
-        let plistName = "GoogleService-Info-Dev"
-#else
         let plistName = "GoogleService-Info-Prod"
-#endif
         guard let path = Bundle.main.path(forResource: plistName, ofType: "plist"),
               let options = FirebaseOptions(contentsOfFile: path) else {
             fatalError("Missing \(plistName).plist in the app bundle")

@@ -26,8 +26,16 @@ jobs:
           mkdir -p Resources
           echo "${{ secrets.CONFIG_XCCONFIG_BASE64 }}" | base64 --decode > Resources/Config.xcconfig
 
-      - name: Create GoogleService-Info.plist from secret
-        run: echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > NotitApp/GoogleService-Info.plist
+      # Release loads GoogleService-Info-Prod.plist by name (NotitAppApp.configureFirebase)
+      # and fatalErrors without it — fail here instead of shipping a build that crashes on launch.
+      - name: Create GoogleService-Info-Prod.plist from secret
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICE_INFO_PROD_PLIST_BASE64 }}" | base64 --decode > NotitApp/GoogleService-Info-Prod.plist
+          PROJECT_ID=$(/usr/libexec/PlistBuddy -c "Print :PROJECT_ID" NotitApp/GoogleService-Info-Prod.plist)
+          if [ -z "$PROJECT_ID" ] || [[ "$PROJECT_ID" == *placeholder* ]]; then
+            echo "::error::GOOGLE_SERVICE_INFO_PROD_PLIST_BASE64 falta o no es un plist Prod real (PROJECT_ID='$PROJECT_ID')."
+            exit 1
+          fi
 
       - name: Decode signing certificate
         run: echo "${{ secrets.DISTRIBUTION_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12

@@ -11,13 +11,13 @@ import SwiftData
 final class CompositionRoot {
 
     private let modelContext: ModelContext
-    // XCTestConfigurationFilePath is set by Xcode for every process running
-    // under the test bundle (unit or UI tests) — routing those to the no-op
-    // logger keeps test runs out of the real Firebase project without a
-    // separate test-only composition path.
-    private let analytics: AnalyticsLogging = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        ? NoOpAnalyticsLogger()
-        : FirebaseAnalyticsLogger()
+    // Firebase is only configured in Release (see NotitAppApp.configureFirebase),
+    // so Debug — local runs, unit and UI tests — must never reach the SDK.
+#if DEBUG
+    private let analytics: AnalyticsLogging = NoOpAnalyticsLogger()
+#else
+    private let analytics: AnalyticsLogging = FirebaseAnalyticsLogger()
+#endif
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
